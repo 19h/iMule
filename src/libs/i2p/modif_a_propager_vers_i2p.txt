@@ -1,0 +1,34 @@
+class				current file
+
+SearchReplyJob			router/java/src/net/i2p/router/networkdb/kademlia/SearchJob.java
+ReplyVerifiedJob		router/java/src/net/i2p/router/networkdb/kademlia/SearchJob.java
+ReplyNotVerifiedJob		router/java/src/net/i2p/router/networkdb/kademlia/SearchJob.java
+FloodOnlyLookupTimeoutJob	router/java/src/net/i2p/router/networkdb/kademlia/FloodOnlySearchJob.java
+FloodOnlyLookupMatchJob		router/java/src/net/i2p/router/networkdb/kademlia/FloodOnlySearchJob.java
+FloodOnlyLookupSelector		router/java/src/net/i2p/router/networkdb/kademlia/FloodOnlySearchJob.java
+SingleLookupJob			router/java/src/net/i2p/router/networkdb/kademlia/FloodOnlySearchJob.java
+SingleSearchJob			router/java/src/net/i2p/router/networkdb/kademlia/FloodOnlySearchJob.java
+DummyClientManagerFacade	router/java/src/net/i2p/router/ClientManagerFacade.java
+DummyTunnelManagerFacade	router/java/src/net/i2p/router/TunnelManagerFacade.java
+DummyCommSystemFacade		router/java/src/net/i2p/router/CommSystemFacade.java
+OnRepublishSuccess		router/java/src/net/i2p/router/networkdb/kademlia/RepublishLeaseSetJob.java
+OnRepublishFailure		router/java/src/net/i2p/router/networkdb/kademlia/RepublishLeaseSetJob.java
+DummyPeerManagerFacade		router/java/src/net/i2p/router/PeerManagerFacade.java
+PersistProfileJob		router/java/src/net/i2p/router/peermanager/PersistProfilesJob.java
+
+
+||!SearchReplyJob||networkdb/kademlia/SearchJob.java||
+||!ReplyVerifiedJob||networkdb/kademlia/SearchJob.java||
+||!ReplyNotVerifiedJob||networkdb/kademlia/SearchJob.java||
+||!FloodOnlyLookupTimeoutJob||networkdb/kademlia/FloodOnlySearchJob.java||
+||!FloodOnlyLookupMatchJob||networkdb/kademlia/FloodOnlySearchJob.java||
+||!FloodOnlyLookupSelector||networkdb/kademlia/FloodOnlySearchJob.java||
+||!SingleLookupJob||networkdb/kademlia/FloodOnlySearchJob.java||
+||!SingleSearchJob||networkdb/kademlia/FloodOnlySearchJob.java||
+||!DummyClientManagerFacade||ClientManagerFacade.java||
+||!DummyTunnelManagerFacade||TunnelManagerFacade.java||
+||!DummyCommSystemFacade||CommSystemFacade.java||
+||!OnRepublishSuccess||networkdb/kademlia/RepublishLeaseSetJob.java||
+||!OnRepublishFailure||networkdb/kademlia/RepublishLeaseSetJob.java||
+||!DummyPeerManagerFacade||PeerManagerFacade.java||
+||!PersistProfileJob||peermanager/PersistProfilesJob.java||

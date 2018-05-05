@@ -1,0 +1,639 @@
+Mon algorithme :
+
+go : m_possible  << CRoutingBin::getClosestTo
+     m_tried     << m_possible[1..ALPHA]
+     m_possible  -= m_possible[1..ALPHA]
+
+processResponse :
+     m_responded << contact qui repond
+     m_best      << contact qui répond, s'il le mérite
+     m_tried     << contacts reçus, si nouveaux ET s'ils le méritent ( i.e. ils sont misux que celui qui répond, et il reste de la place dans m_best )
+     m_possible  << contacts reçus, si nouveaux MAIS s'ils ne méritent pas
+
+jumpStart :
+     sendRequestToSelectedPeers des contacts de m_best
+     si |m_best| < ALPHA :
+	m_tried    << m_possible[1..ALPHA]
+	m_possible -= m_possible[1..ALPHA]
+
+m_possible :
+   + void CSearch::go(void)
+	- remplissage au démarrage d'une recherche par routingZone
+	- ajout de la liste à m_inUse
+	- transfert des ALPHA_QUERY premiers vers m_tried (avec appel à sendFindPeersForTarget)
+   ---> m_possible = liste des contacts non-contactés
+   ---> m_tried    = liste des contacts contactés
+
+   + void CSearch::processResponse(const Address & fromDest, ContactList *results)
+	- pour les contacts reçus qui ne sont ni dans m_possible, ni dans m_tried :
+		- ajout de c dans m_possible
+		- éventuellement, ajout dans m_best et m_tried  (avec appel à sendFindPeersForTarget)
+   ---> m_possible = liste des contacts non-contactés + liste des NOUVEAUX contacts reçus, que l'on contacte si possible
+   ---> m_tried    = liste des contacts contactés
+
+   + void CSearch::jumpStart(void)
+	- pour tous les éléments de m_possible
+	- s'il n'est pas dans m_tried, on l'y met(avec appel à sendFindPeersForTarget)
+	- s'il est dans m_responded (i.e. s'il a déjà renvoyé une liste de contacts proches de la requête)
+		*** sendRequestToSelectedPeers() ***
+	- on l'efface de m_possible
+   ---> contacter tous les contacts non-contactés de m_possible
+   ---> requête à tous les contacts de m_possible qui ont répondu
+   ---> m_tried    = liste des contacts contactés
+   ---> vidage de m_possible
+
+CONCLUSIONS :
+ - la liste des contacts initialement contactés ne reviendra jamais dans m_possible
+ - les nouveaux contacts reçus qui ne répondent pas avant l'appel à jumpStart (toutes les 2 secondes) disparaîtront de m_possible
+ - comme on n'appelle sendRequestToSelectedPeers que sur les contacts de m_possible, PROBLEME !!!
+
+
+
+m_inUse :
+   + void CSearch::go(void)
+	- rempli par la liste des contacts renvoyés par CRoutingBin::getClosestTo, qui incrémente pour chacun c->m_inUse
+   + CSearch::~CSearch()
+	- pour chaque contact c de la liste, appel de c->decUse(), qui décrémente c->m_inUse
+
+**********************
+publish a File
+**********************
+
+enregistre un CSearch : 
+	type          = Kademlia::CSearch::STOREFILE
+	m_target      = kadFileID
+	m_searchTerms = [ m_target (128) | 1 (8) ]
+	m_searchID    = ++m_nextID;
+
+et envoie un packet à un client c choisi dans les clients connus les plus proches de la requête ?
+	[ protocol=OP_KADEMLIAHEADER (8) | opcode=KADEMLIA_REQ (8) | data=[ KADEMLIA_STORE=0x04 (8) | m_target=kadFileID (128) | check=c->getClientID() (128) ] ]
+
+--------------------------
+CSharedFileList::Publish()
+--------------------------
+| appelé toutes les secondes
+| appelle toutes les KADEMLIAPUBLISHTIME secondes :
+| Kademlia::CSearchManager::prepareLookup(Kademlia::CSearch::STOREFILE, true, kadFileID )
+|  | ---------------------------------------------------------------------------------------
+|  | CSearch* CSearchManager::prepareLookup(uint32 type, bool start, const CUInt128 &id)
+|  | ---------------------------------------------------------------------------------------
+|  | CSearch *s = new CSearch;
+|  | s->m_type = type;
+|  | s->m_target = id; //kadFileID
+|  | // Write complete packet
+|  | s->m_searchTerms = new CMemFile();
+|  | s->m_searchTerms->WriteUInt128(s->m_target); //kadFileID
+|  | s->m_searchTerms->WriteUInt8(1);
+|  | s->m_searchID = ++m_nextID;
+|  | if( start ) {
+|  | 	m_searches[s->m_target] = s;
+|  | 	s->go();
+|  | | ---------------------
+|  | | void CSearch::go(void)
+|  | | ---------------------
+|  | | CUInt128 distance = CKademlia::getPrefs()->getKadID() .XOR( m_target );
+|  | | si m_possible est vide : CKademlia::getRoutingZone()->getClosestTo(3, m_target, distance, 50, &m_possible, true, true);
+|  | | ajout des contacts de  m_possible dans m_inUse
+|  | | pour les ALPHA_QUERY premiers clients de m_possible :
+|  | | 		- transfert du contact de m_possible vers m_tried
+|  | | 		- sendFindPeersForTarget(c->getClientID(), c->getUDPDest());
+!!!!!!!!!!!!!!!!!!!!!! Les ajouter aussi à m_best !
+|  | | | ------------------------------------------------------------------------
+|  | | | void CSearch::sendFindPeersForTarget(const CUInt128 &check, const Address & dest)
+|  | | | ------------------------------------------------------------------------
+|  | | | CMemFile bio = [ KADEMLIA_STORE | m_target=kadFileID (128) | check=c->getClientID() (128) ]
+|  | | | CKademlia::getUDPListener()->sendPacket(&bio, KADEMLIA_REQ, dest);
+|  | | | 
+|  | | | |----------------------------------------------------------------------------------------
+|  | | | | void CKademliaUDPListener::sendPacket(CMemFile *data, byte opcode, const Address & dest)
+|  | | | | ----------------------------------------------------------------------------------------
+|  | | | | CPacket* packet = new CPacket(data, OP_KADEMLIAHEADER, opcode);
+|  | | | | theApp.clientudp->SendPacket(packet,dest);
+|  | | | | --> envoie : 
+
+[ protocol=OP_KADEMLIAHEADER (8) | opcode=KADEMLIA_REQ (8) | data=[ KADEMLIA_STORE=0x04 (8) | m_target=kadFileID (128) | check=c->getClientID() (128) ] ]
+
+
+
+*****************
+Réponse à publish
+*****************
+
+renvoie les coordonnées des clients dont le KadID est le plus proche de la requête
+
+----------------------------------------
+CMuleUDPSocket::OnReceive(int errorCode)
+----------------------------------------
+ | ------------------------------------------------------------------------------------
+ | CClientUDPSocket::OnPacketReceived(const Address& addr, byte* buffer, size_t length)
+ | ------------------------------------------------------------------------------------
+ | buffer = [protocol | opcode | ...]
+ | si protocol = OP_KADEMLIAHEADER(=0xE4) Kademlia::CKademlia::processPacket(buffer, length, addr)
+ |  | --------------------------------------------------------------------------------
+ |  | CKademlia::processPacket(const byte *data, uint32 lenData, const Address & dest)
+ |  | --------------------------------------------------------------------------------
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | CKademliaUDPListener::processPacket(const byte* data, uint32 lenData, const Address & dest)
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | data = <-- buffer = [ protocol | opcode | ...packetData... ]
+ |  |  | si opcode == KADEMLIA_REQ, processKademliaRequest(packetData, lenPacket, dest);
+ |  |  | | ------------------------------------------------------------------------------------------------------------------
+ |  |  | | void CKademliaUDPListener::processKademliaRequest (const byte *packetData, uint32 lenPacket, const Address & dest)
+ |  |  | | ------------------------------------------------------------------------------------------------------------------
+ |  |  | | packetData == [ type==KADEMLIA_STORE (8) | target (128) | check (128) ]
+ |  |  | | type = type & 0x1F;
+ |  |  | | distance = CKademlia::getPrefs()->getKadID().XOR( target );
+ |  |  | | ContactMap results;
+!!!!!!!!!!!!!! remplacer type par type_dependant_beta
+ |  |  | | CKademlia::getRoutingZone()->getClosestTo(2, target, distance, (int)type, &results);
+ |  |  | | count = results.size();
+ |  |  | | CMemFile bio2 = [ target (128) | count (8) *[| c->getClientID() | c->getUDPDest() | c->getTCPDest() | c->getType() (8) ] ]
+ |  |  | | sendPacket(&bio2, KADEMLIA_RES, dest);
+ |  |  | | --> envoie :
+
+[ protocol=OP_KADEMLIAHEADER (8) | opcode=KADEMLIA_RES | target (128) | count (8) *[| c->getClientID() | c->getUDPDest() | c->getTCPDest() | c->getType() (8) ]]
+
+
+**************************************
+A la réception de la réponse à publish
+**************************************
+
+envoie un packet à un client c renvoyé dans la réponse à publish, à condition qu'il n'ait pas encore été questionné.
+[ protocol=OP_KADEMLIAHEADER (8) | opcode=KADEMLIA_REQ (8) | data=[ KADEMLIA_STORE=0x04 (8) | m_target=kadFileID (128) | check=c->getClientID() (128) ] ]
+
+----------------------------------------
+CMuleUDPSocket::OnReceive(int errorCode)
+----------------------------------------
+ | ------------------------------------------------------------------------------------
+ | CClientUDPSocket::OnPacketReceived(const Address& addr, byte* buffer, size_t length)
+ | ------------------------------------------------------------------------------------
+ | buffer = [protocol | opcode | ...]
+ | si protocol = OP_KADEMLIAHEADER(=0xE4) Kademlia::CKademlia::processPacket(buffer, length, addr)
+ |  | --------------------------------------------------------------------------------
+ |  | CKademlia::processPacket(const byte *data, uint32 lenData, const Address & dest)
+ |  | --------------------------------------------------------------------------------
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | CKademliaUDPListener::processPacket(const byte* data, uint32 lenData, const Address & dest)
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | data = <-- buffer = [ protocol | opcode | ...packetData... ]
+ |  |  | si opcode == KADEMLIA_RES, processKademliaResponse(packetData, lenPacket, dest);
+ |  |  | | -------------------------------------------------------------------------------------------------------------------
+ |  |  | | void CKademliaUDPListener::processKademliaResponse (const byte *packetData, uint32 lenPacket, const Address & dest)
+ |  |  | | -------------------------------------------------------------------------------------------------------------------
+ |  |  | | bio == [ target (128) | numContacts (8) *[ id (8) | contactDest | tdest | type (8) ] ]
+ |  |  | | ContactList *results = new ContactList; <-- numContacts * CContact(id, contactDest, tdest, target)
+ |  |  | | numContacts * routingZone.add(id, contactDest, tdest, type);
+ |  |  | | CSearchManager::processResponse(target, dest, results);
+ |  |  | | | ------------------------------------------------------------------------------------------------------------
+ |  |  | | | void CSearchManager::processResponse(const CUInt128 &target, const Address & fromDest, ContactList *results)
+ |  |  | | | ------------------------------------------------------------------------------------------------------------
+ |  |  | | | CSearch s = m_searches.find(target)->second;
+ |  |  | | | s->processResponse(fromDest, results);
+ |  |  | | | | -----------------------------------------------------------------------------
+ |  |  | | | | void CSearch::processResponse(const Address & fromDest, ContactList *results)
+ |  |  | | | | -----------------------------------------------------------------------------
+ |  |  | | | | recherche de fromDest dans la liste des clients contactés (m_tried)
+ |  |  | | | | fromDistance = tried->first;
+ |  |  | | | | from = tried->second;
+ |  |  | | | | m_responded[fromDistance] = from;                                                          ? a quoi sert m_responded ?
+ |  |  | | | | 
+ |  |  | | | | Pour chaque contact "c" dans "results" :
+ |  |  | | | |   distance = c->getClientID().XOR(m_target);
+ |  |  | | | |   si le contact c n'est ni dans m_possible, ni dans m_tried :
+ |  |  | | | |     ajout de c dans m_possible
+!!!!!!!!!!!!!!!  supprimer la première condition
+ |  |  | | | |     si (distance < fromDistance) et si possible,                                           ? fromDistance est-il dans m_best ?
+ |  |  | | | |     I.E. SI LE PAIR OFFRE UN CLIENT PLUS PROCHE QUE LUI-MEME DE LA REQUETE
+ |  |  | | | |          ET QU'IL Y A UNE PLACE POUR LUI DANS M_BEST (max ALPHA_QUERY)
+ |  |  | | | |   	- insertion de c dans m_best                                                      ? à quoi sert m_best ?
+ |  |  | | | |   	- insertion de c dans m_tried
+ |  |  | | | |   	- sendFindPeersForTarget(c->getClientID(), c->getUDPDest());
+!!!!!!!!!!!!!!!         - et l'enlever de m_possible
+
+*******************************************************************************
+PUBLISH : SERT À RECOLTER LES CLIENTS LES PLUS PRÈS D'UNE CLEF DE FICHIER
+mais ne leur demande pas d'indexer la clef
+*******************************************************************************
+
+
+
+
+*********************************
+DEMANDE D'INDEXATION D'UNE SOURCE
+*********************************
+
+--------------------------------------------------------------
+void CimuleApp::OnCoreTimer(CMuleInternalEvent& WXUNUSED(evt))
+--------------------------------------------------------------
+ | -------------------------
+ | void CKademlia::process()
+ | -------------------------
+ | toutes les SEARCH_JUMPSTART secondes
+ |  | ------------------------------------
+ |  | void CSearchManager::jumpStart(void)
+ |  | ------------------------------------
+ |  | pour chaque CSearch s de la liste :
+ |  | si son type est CSearch::STOREFILE, si s->m_created + SEARCHSTOREFILE_LIFETIME - 20s < now et si s->getAnswers() <= SEARCHSTOREFILE_TOTAL
+ |  | s->jumpStart();
+ |  |  | -----------------------------
+ |  |  | void CSearch::jumpStart(void)
+ |  |  | -----------------------------
+ |  |  | si la dernière réponse est arrivée il y a plus de 3 secondes (m_lastReponse)
+ |  |  | pour chaque PREMIER élément de m_possible :
+ |  |  | - s'il n'est pas dans m_tried : 
+ |  |  |         - on l'y met
+ |  |  |         - *** sendFindPeersForTarget(c->getClientID(), c->getUDPDest()) ***
+ |  |  | - s'il est dans m_responded (i.e. s'il a déjà renvoyé une liste de contacts proches de la requête)
+ |  |  | 	*** sendRequestToSelectedPeers() ***
+ |  |  | - on l'efface de m_possible
+ |  |  |  | ---------------------------
+ |  |  |  | void CSearch::sendRequestToSelectedPeers()
+ |  |  |  | ---------------------------
+ |  |  |  | possible = PREMIER élément de m_possible;
+ |  |  |  | fromDistance = possible->first;
+ |  |  |  | from = possible->second;
+ |  |  |  | si m_type == STOREFILE :
+ |  |  |  | if( m_answers > SEARCHSTOREFILE_TOTAL ) prepareToStop (déjà fait dans CSearchManager, plus haut !) et return.
+ |  |  |  | byte fileid[16];
+ |  |  |  | m_target.toByteArray(fileid);
+ |  |  |  | CKnownFile* file = theApp.sharedfiles->GetFileByID(CMD4Hash(fileid));
+ |  |  |  | si (file)
+ |  |  |  | 	CKademlia::getUDPListener()->publishPacket(
+ |  |  |  | 		dest           = from->getUDPDest(), 
+ |  |  |  | 		targetID       = m_target, 
+ |  |  |  | 		contactID      = CKademlia::getPrefs()->getClientHash(), 
+ |  |  |  | 		tags           = { (TAG_SOURCETYPE,1)(8), (TAG_SOURCEDEST, theApp.GetDest())(Address) });
+ |  |  |  | 	m_totalRequestAnswers++;
+ |  |  |  |  | ----------------------------------------------------------------------------------------------------------------------------------------
+ |  |  |  |  | void CKademliaUDPListener::publishPacket(const Address & dest, const CUInt128 &targetID, const CUInt128 &contactID, const TagList& tags)
+ |  |  |  |  | ----------------------------------------------------------------------------------------------------------------------------------------
+ |  |  |  |  | envoie vers dest :
+
+[  OP_KADEMLIAHEADER 
+ | KADEMLIA_PUBLISH_REQ 
+ | targetID(==fileID) (128) 
+ | 1 (16) 
+ | contactID(==CKademlia::getPrefs()->getClientHash()) (128)
+ | n(==2) (16)
+ | (TAG_SOURCETYPE,1)(8)
+ | (TAG_SOURCEDEST, theApp.GetDest())(Address) } ]
+
+
+
+****************************************************************************************************************************
+					INDEXATION D'UNE SOURCE
+
+L'indexation d'une source se fait lors de la réception de :
+[ OP_KADEMLIAHEADER | KADEMLIA_PUBLISH_REQ | file(keyID) (128) | count (16) * [ target(sourceID) (128) | n (8) * [ tag ] ] ]
+
+pour les entrées ayant un tag de type : tag->m_name.Cmp(wxT(TAG_SOURCETYPE)) && tag->m_type == 9
+****************************************************************************************************************************
+
+----------------------------------------
+CMuleUDPSocket::OnReceive(int errorCode)
+----------------------------------------
+ | ------------------------------------------------------------------------------------
+ | CClientUDPSocket::OnPacketReceived(const Address& addr, byte* buffer, size_t length)
+ | ------------------------------------------------------------------------------------
+ | buffer = [protocol | opcode | ...]
+ | si protocol = OP_KADEMLIAHEADER(=0xE4) Kademlia::CKademlia::processPacket(buffer, length, addr)
+ |  | --------------------------------------------------------------------------------
+ |  | CKademlia::processPacket(const byte *data, uint32 lenData, const Address & dest)
+ |  | --------------------------------------------------------------------------------
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | CKademliaUDPListener::processPacket(const byte* data, uint32 lenData, const Address & dest)
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | data = <-- buffer = [ protocol | opcode | ...packetData... ]
+ |  |  | si opcode=KADEMLIA_PUBLISH_REQ : processPublishRequest(packetData, lenPacket, dest);
+ |  |  | | -----------------------------------------------------------------------------------------------------------------
+ |  |  | | void CKademliaUDPListener::processPublishRequest (const byte *packetData, uint32 lenPacket, const Address & dest)
+ |  |  | | -----------------------------------------------------------------------------------------------------------------
+ |  |  | | construction des entry à partir de packetData = [ file(keyID) (128) | count (16) * [ target(sourceID) (128) | n (8) * [ tag ] ] ] ]
+ |  |  | | puis ajout des sources (ou des Keywords)
+ |  |  | | | ----------------------------------------------------------------------------------------------------------------
+ |  |  | | | bool CIndexed::AddSources(const CUInt128& keyID, const CUInt128& sourceID, Kademlia::CEntry* entry, uint8& load)
+ |  |  | | | ----------------------------------------------------------------------------------------------------------------
+ |  |  | | 
+ |  |  | | puis notification au demandeur :
+
+[ OP_KADEMLIAHEADER | KADEMLIA_PUBLISH_RES | file (128) | load (8) ]
+
+
+
+
+
+
+
+
+***************************************
+A la réception d'une demande de sources
+***************************************
+
+On cherche dans CKademlia::getIndexed()->m_Sources_map
+
+----------------------------------------
+CMuleUDPSocket::OnReceive(int errorCode)
+----------------------------------------
+ | ------------------------------------------------------------------------------------
+ | CClientUDPSocket::OnPacketReceived(const Address& addr, byte* buffer, size_t length)
+ | ------------------------------------------------------------------------------------
+ | buffer = [protocol | opcode | ...]
+ | si protocol = OP_KADEMLIAHEADER(=0xE4) Kademlia::CKademlia::processPacket(buffer, length, addr)
+ |  | --------------------------------------------------------------------------------
+ |  | CKademlia::processPacket(const byte *data, uint32 lenData, const Address & dest)
+ |  | --------------------------------------------------------------------------------
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | CKademliaUDPListener::processPacket(const byte* data, uint32 lenData, const Address & dest)
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | data = <-- buffer = [ protocol | opcode | ...packetData... ]
+ |  |  | si opcode=KADEMLIA_SEARCH_REQ:
+ |  |  | | ----------------------------------------------------------------------------------------------------------------
+ |  |  | | void CKademliaUDPListener::processSearchRequest (const byte *packetData, uint32 lenPacket, const Address & dest)
+ |  |  | | ----------------------------------------------------------------------------------------------------------------
+ |  |  | | packetData == [ target (128) | restrictive (8) ]
+ |  |  | | if(restrictive) CKademlia::getIndexed()->SendValidSourceResult(target, dest);
+ |  |  | |  | ---------------------------------------------------------------------------------
+ |  |  | |  | void CIndexed::SendValidSourceResult(const CUInt128& keyID, const Address & dest)
+ |  |  | |  | ---------------------------------------------------------------------------------
+ |  |  | |  | SrcHash* currSrcHash = m_Sources_map[keyID]
+ |  |  | |  | byte packet[1024*50];
+ |  |  | |  | CByteIO bio(packet,sizeof(packet)) = [OP_KADEMLIAHEADER (8) | KADEMLIA_SEARCH_RES (8) | keyID (128) | count (8) *
+ |  |  | |  | 	[currSrcHash->m_Source_map[i].sourceID (128) | currSrcHash->m_Source_map->taglist ] ]
+ |  |  | |  | CKademlia::getUDPListener()->sendPacket(packet, len, dest);
+
+
+*************************************************************************************************************************************
+Pour ajouter à un fichier en téléchargement une source depuis Kad, il faut :
+RECEVOIR UN PAQUET 
+
+[ protocol=OP_KADEMLIAHEADER | opcode == KADEMLIA_SEARCH_RES | packetData = [ target(128) | count (16) *[| answer (128) | tags ] ] ]
+
+ET AVOIR DANS LA LISTE m_searches DE CSearchManager UNE RECHERCHE CONCERNANT target, DE TYPE "FILE"
+*************************************************************************************************************************************
+
+----------------------------------------
+CMuleUDPSocket::OnReceive(int errorCode)
+----------------------------------------
+ | ------------------------------------------------------------------------------------
+ | CClientUDPSocket::OnPacketReceived(const Address& addr, byte* buffer, size_t length)
+ | ------------------------------------------------------------------------------------
+ | buffer = [protocol | opcode | ...]
+ | si protocol = OP_KADEMLIAHEADER(=0xE4) Kademlia::CKademlia::processPacket(buffer, length, addr)
+ |  | --------------------------------------------------------------------------------
+ |  | CKademlia::processPacket(const byte *data, uint32 lenData, const Address & dest)
+ |  | --------------------------------------------------------------------------------
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | CKademliaUDPListener::processPacket(const byte* data, uint32 lenData, const Address & dest)
+ |  |  | -------------------------------------------------------------------------------------------
+ |  |  | data = <-- buffer = [ protocol | opcode | ...packetData... ]
+ |  |  | si opcode == KADEMLIA_SEARCH_RES (0x38), processSearchResponse(packetData, lenPacket, dest);
+ |  |  |  | ------------------------------------------------------------------------------------------------------------
+ |  |  |  | CKademliaUDPListener::processSearchResponse (const byte *packetData, uint32 lenPacket, const Address & dest)
+ |  |  |  | ------------------------------------------------------------------------------------------------------------
+ |  |  |  | 	packetData = [ target(128) | count (16) *[| answer (128) | tags ] ]
+ |  |  |  | 	count fois : CSearchManager::processResult(target, dest, answer, tags);
+ |  |  |  |  | ----------------------------------------------------------------------------------------------------------------------
+ |  |  |  |  | CSearchManager::processResult(const CUInt128 &target, const Address & fromDest, const CUInt128 &answer, TagList *info)
+ |  |  |  |  | ----------------------------------------------------------------------------------------------------------------------
+ |  |  |  |  | CSearch *s = m_searches.find(target)->second;
+ |  |  |  |  | s->processResult(fromDest/*IP, fromPort*/, answer, info);
+ |  |  |  |  |  | ---------------------------------------------------------------------------------------
+ |  |  |  |  |  | CSearch::processResult(const Address & fromDest, const CUInt128 &answer, TagList *info)
+ |  |  |  |  |  | ---------------------------------------------------------------------------------------
+ |  |  |  |  |  | 	switch(m_type) {
+ |  |  |  |  |  | 		case FILE:   processResultFile(fromDest, answer, info);
+ |  |  |  |  |  | 		case KEYWORD:processResultKeyword(fromDest, answer, info);
+ |  |  |  |  |  | 		case NOTES:  processResultNotes(fromDest, answer, info);
+ |  |  |  |  |  |  | -------------------------------------------------------------------------------------------
+ |  |  |  |  |  |  | CSearch::processResultFile(const Address & fromDest, const CUInt128 &answer, TagList *info)
+ |  |  |  |  |  |  | -------------------------------------------------------------------------------------------
+ |  |  |  |  |  |  | 	pour chaque tag de info :
+ |  |  |  |  |  |  | 		if (!tag->m_name.Cmp(wxT(TAG_SOURCETYPE))) { type = tag->GetInt();
+ |  |  |  |  |  |  | 		if (!tag->m_name.Cmp(wxT(TAG_SOURCEDEST))) { tcpdest = tag->GetAddr();
+ |  |  |  |  |  |  | 		if (!tag->m_name.Cmp(wxT(TAG_SOURCEUDEST))) {udpdest = tag->GetAddr();
+ |  |  |  |  |  |  | 		if (!tag->m_name.Cmp(wxT(TAG_SERVERDEST))) { serverdest = tag->GetAddr();
+ |  |  |  |  |  |  | 		if (!tag->m_name.Cmp(wxT(TAG_CLIENTLOWID))) {clientid	= tag->GetInt();
+ |  |  |  |  |  |  | 		if (!tag->m_name.Cmp(wxT(TAG_BUDDYHASH))) { hash.Decode(tag->GetStr())); buddy.setValueBE(hash.GetHash());
+ |  |  |  |  |  |  | 	si type == 1 ou 3
+ |  |  |  |  |  |  | 	     theApp.downloadqueue->KademliaSearchFile(m_searchID, &answer, &buddy, type, tcpdest, udpdest, serverdest, clientid);
+ |  |  |  |  |  |  |  | theApp.downloadqueue->KademliaSearchFile(m_searchID, &answer, &buddy, type, tcpdest, udpdest, serverdest, clientid);
+ |  |  |  |  |  |  |  | ------------------------------------------------------------------------------------------------------------------------
+ |  |  |  |  |  |  |  | CDownloadQueue::KademliaSearchFile(uint32 searchID,const Kademlia::CUInt128* pcontactID,uint8 type,
+ |  |  |  |  |  |  |  | const CI2PAddress & tcpdest, const CI2PAddress & udpdest, const CI2PAddress & serverdest, uint32 WXUNUSED ( clientid ) )
+ |  |  |  |  |  |  |  | ------------------------------------------------------------------------------------------------------------------------
+!!!!!! selon le "type", des traitements différents. Ici le cas type==1 (source pas firewalled)
+ |  |  |  |  |  |  |  |  | ctemp = new CUpDownClient ( tcpdest, serverdest, temp, false, true );
+ |  |  |  |  |  |  |  |  | ctemp->SetSourceFrom ( SF_KADEMLIA );
+ |  |  |  |  |  |  |  |  | CheckAndAddSource ( temp, ctemp );
+ |  |  |  |  |  |  |  |  | -----------------------------------------------------------------------------------
+ |  |  |  |  |  |  |  |  | void CDownloadQueue::CheckAndAddSource ( CPartFile* sender, CUpDownClient* source )
+ |  |  |  |  |  |  |  |  | -----------------------------------------------------------------------------------
+ |  |  |  |  |  |  |  |  | apprès maints tests :
+ |  |  |  |  |  |  |  |  | sender->AddSource ( source );
+
+
+
+*******************************************************************************
+La recherche de sources Kad pour un fichier en téléchargement se lance ainsi :
+*******************************************************************************
+
+-------------------------------------------------------------------------------
+uint32 CPartFile::Process(uint32 reducedownload/*in percent*/,uint8 m_icounter)
+-------------------------------------------------------------------------------
+ | A condition qu'on ait besoin de sources pour ce CPartFile :
+ | Kademlia::CSearch* pSearch = Kademlia::CSearchManager::prepareLookup(Kademlia::CSearch::FILE, true, kadFileID);
+ | --------------------------------------------------------------------------------------
+ | CSearch* CSearchManager::prepareLookup ( uint32 type, bool start, const CUInt128 &id )
+ | --------------------------------------------------------------------------------------
+ |  | m_searches[s->m_target] = s; // ajout d'un CSearch du type CSearch::FILE
+ |  | s->go();                     // lancement de la recherche
+
+
+
+
+***********************
+bootstrap
+***********************
+
+
+
+CKademliaUDPListener::processFirewalledRequest
+
+tcpdest = bio.ReadAddress(); // null !
+CContact contact;
+contact.setTCPDest(tcpdest);
+contact.setUDPDest(dest);    // dest = celui qui a envoyé la requète, d'après I2P
+theApp.clientlist->RequestTCP(&contact);
+	CClientList::RequestTCP
+	nContactDest = contact->getTCPDest();
+	CUpDownClient* pNewClient = FindClientByDest(nContactDest);
+	pNewClient = new CUpDownClient(contact->getTCPDest(), Address::null, NULL, false, true);
+	pNewClient->SetKadDest(contact->getUDPDest());
+	pNewClient->SetKadState(KS_QUEUED_FWCHECK);
+	AddToKadList(pNewClient);
+	AddClient(pNewClient);
+
+
+CKademliaUDPListener::processFirewalledResponse2 : appelé quand reçu KADEMLIA_FIREWALLED_ACK
+
+KADEMLIA_FIREWALLED_ACK 
+? émis par   : CClientList::Process()
+vers       : client->GetKadDest()
+conditions : 
+	- ? le client est dans m_KadSources
+	- cur_client->GetKadState() == KS_CONNECTED_FWCHECK
+
+état KS_CONNECTED_FWCHECK 
+donné par CUpDownClient::ConnectionEstablished()
+Conditions :
+	- GetKadState() == KS_CONNECTING_FWCHECK
+	
+
+
+état KS_CONNECTING_FWCHECK
+donné par CUpDownClient::TryToConnect
+conditions :
+	- !HasLowID() ou ? theApp.DoCallback()
+	- GetKadState() == KS_QUEUED_FWCHECK
+
+CUpDownClient::ConnectionEstablished(): 
+appelé par CUpDownClient::TryToConnect
+? uClientDest = GetDest() ou m_nUserDestHybrid
+conditions :
+	- !HasLowID() ou ? theApp.DoCallback()
+	- !m_socket || !m_socket->IsConnected()
+
+
+CUpDownClient::TryToConnect
+lancé par CClientList::Process
+	- condition : état = KS_QUEUED_FWCHECK
+
+état KS_QUEUED_FWCHECK
+donné par CClientList::RequestTCP(contact)
+conditions :
+	- theApp.GetDest() != contact->getTCPDest()
+	
+
+RequestTCP :
+appelé par CKademliaUDPListener::processFirewalledRequest()
+
+
+HasLowID = IsLowID(m_nUserDestHybrid)
+IsLowID(address) = !address.isValid()
+
+
+
+
+
+
+*****************************************************
+Ajout d'une source Kad à un fichier en téléchargement
+*****************************************************
+CSearch::processResult
+
+
+void CSearch::processResultFile(const Address & fromDest, const CUInt128 &answer, TagList *info)
+si le type de résultat, lu dans la liste des tags "info", est 1 ou 3, on appelle :
+theApp.downloadqueue->KademliaSearchFile(m_searchID, &answer, &buddy, type, tcpdest, udpdest, serverdest, clientid);
+
+
+
+CDownloadQueue::KademliaSearchFile
+!!!!!! selon le "type", des traitements différents
+ctemp = new CUpDownClient ( tcpdest, serverdest, temp, false, true );
+ctemp->SetSourceFrom ( SF_KADEMLIA );
+CheckAndAddSource ( temp, ctemp );
+
+
+
+
+
+
+****************************************************************************
+Ajout perso : comptage dans Kad du nombre de sources complètes et partielles
+****************************************************************************
+
+1 - demande d'indexation d'une SOURCE (=un fichier)
+void CSharedFileList::Publish()
+(re)mise à zéro des compteurs de sources dans l'objet fichier
+si Kademlia::CSearchManager::prepareLookup(Kademlia::CSearch::STOREFILE...) a renvoyé non NULL.
+
+void CSearch::sendRequestToSelectedPeers()
+ajout d'un tag TAG_FLAGS au paquet, en plus de TAG_SOURCETYPE
+contient le bit TAG_FLAGS_COMPLETEFILE si le fichier est complet
+
+2 - stockage de ce flag dans l'index Kad
+* CKademliaUDPListener::processPublishRequest
+le tag est lu et stocké dans la liste de tags de l'entrée
+indexed->AddSources est appelé
+* CIndexed::AddSources
+
+3 - renvoi du nombre de sources complètes et incomplètes dans la réponse à l'indexation
+ajout des fonctions :
+uint32 CIndexed::GetCompleteSourceCount ( const CUInt128& keyID ) const
+uint32 CIndexed::GetSourceCount(const CUInt128& keyID) const;
+
+CKademliaUDPListener::processPublishRequest renvoie le nombre de sources total + complètes dans :
+KADEMLIA_PUBLISH_RES
+envoi de : key (16) + total (4) + complete(4) + load (1) --> 25 octets
+
+4 - à la réception de cette réponse, stockage de ces informations dans l'objet fichier
+
+void CKademliaUDPListener::processPublishResponse ( CMemFile & bio, const CI2PAddress & dest )
+total et complete sont lus
+on accède à "l'objet fichier" par : 
+CKnownFile * file =	theApp.sharedfiles->GetFileByID(key) ;
+puis on met à jour les valeurs :
+		file->AddTagUnique(CTag(TAG_COMPLETE_SOURCES, std::max(file->GetTagById(TAG_COMPLETE_SOURCES), complete) ) );
+		file->AddTagUnique(CTag(TAG_SOURCES, std::max(file->GetTagById(TAG_SOURCES), total) ) );
+
+
+5 - demande d'indexation d'un MOT-CLEF : envoyer ces informations
+
+void CSharedFileList::Publish() crée un CSearch de type STOREKEYWORD, puis y stocke les IDs des fichiers correspondant à un keyword.
+Appelle CSearch::PreparePacket qui appelle CSearch::PreparePacketForTags sur chaque ID de fichier :
+ -> dans CSearch::PreparePacketForTags, ajout de
+taglist.push_back ( file->GetTag(TAG_COMPLETE_SOURCES));
+taglist.push_back ( file->GetTag(TAG_SOURCES) );
+
+Losqu'un destinataire a été trouvé pour le keyword, CSearch::sendRequestToSelectedPeers() lui envoie le paquet, avec le type KADEMLIA_PUBLISH_REQ.
+
+
+
+6 - à la réception de la demande d'indexation de mot-clef, stocker ces informations dans l'index Kad
+
+CKademliaUDPListener::processPublishRequest
+crée une Entry avec tous les tags de la requète, puis appelle indexed->AddKeyword ( key, target, entry, load ).
+
+CIndexed::AddKeyword remplace l'entrée si elle existait déjà. Donc TAG_SOURCES et TAG_COMPLETE_SOURCES sont "mis à jour".
+
+
+
+7 - à la réception d'une recherche sur mot-clefs, envoi de ces informations
+
+CKademliaUDPListener::processSearchRequest
+appelle CKademlia::getIndexed()->SendValidKeywordResult
+
+CIndexed::SendValidKeywordResult 
+rien à changer : la taglist de chaque Entry est envoyée en réponse.
+message KADEMLIA_SEARCH_RES envoyé
+
+
+8 - à la réception d'une réponse de recherche, prise en compte de ces informations
+
+CKademliaUDPListener::processPacket appelle :
+CKademliaUDPListener::processSearchResponse qui lit les tags, et appelle
+CSearchManager::processResult ( target, dest, answer, tags ); qui appelle :
+CSearch::processResult appelle :
+CSearch::processResultKeyword qui appelle
+theApp.searchlist->KademliaSearchKeyword ( m_searchID, &answer, name, size, type, taglist );
+void CSearchList::KademliaSearchKeyword :
+ - écrit les infos dans un tampon temp (CMemFile)
+ - crée un CSearchFile : CSearchFile* tempFile = new CSearchFile ( temp, searchID , CI2PAddress::null, wxEmptyString, true );
+ - appelle AddToList ( tempFile );
+bool CSearchList::AddToList ( CSearchFile* toadd, bool bClientResponse )
+ - cherche la liste de réponse correspondant au numéro de la recherche : list
+ - cherche si le fichier existe déjà dans cette liste -> list[i]
+ - appelle : list[i]->AddSources ( toadd->GetSourceCount(), toadd->GetCompleteSourceCount() );
+void CSearchFile::AddSources ( uint32 count, uint32 count_complete )
+ - fixe au max si c'est une requête Kad, sinon ajoute les nouvelles sources

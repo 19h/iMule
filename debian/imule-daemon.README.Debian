@@ -1,0 +1,73 @@
+Basic instructions to get imuled up and running
+===============================================
+
+This document should guide you into successfully running the iMule
+daemon, imuled.
+
+Start with invoking the daemon once. From a terminal, write:
+
+    $ imuled
+
+It will create and populate an ~/.iMule directory if you don't have one,
+and will probably abort with an error like this:
+
+    ERROR: iMule daemon cannot be used when external connections are disabled.
+    To enable External Connections, use either a normal iMule or set the key
+    "AcceptExternalConnections" to 1 in the file ~/.iMule/imule.conf.
+
+So, with an editor, edit the ~/.iMule/imule.conf file, search for the
+line containing "AcceptExternalConnections", and change the 0 to 1.
+If you run the daemon now, it will complain like this:
+
+    ERROR: A valid password is required to use external connections, and
+    iMule daemon cannot be used without external connections. To run
+    iMule daemon, you must set the "ECPassword" field in the file
+    ~/.iMule/imule.conf with an appropriate value.
+
+The "ECPassword" needs an MD5 hash of your password, which can be
+computed with a simple procedure. For example, if you want your password
+to be "touche", you'd calculate the value for "ECPassword" like this:
+
+    $ echo -n "touche" | md5sum | awk '{print $1}'
+    75dfa1c8b9f1b1d8e599f2ed98f1ecd0
+
+Once you've edit ~/.iMule/imule.conf again to set ECPassword, you'll be
+able to run imuled. If you want it to go to the background, so that you
+can close the terminal, do:
+
+    $ imuled -f
+
+
+Controlling the daemon
+======================
+
+If all went well, the daemon will listen in port 4712 and will accept
+connections from external programs like imulecmd and imulegui. If no
+firewall blocks the connections, it should be possible to connect from
+remote hosts too.
+
+
+Using iMuleWeb
+==============
+
+The daemon can also be controlled via a web interface. To have it start
+automatically when the daemon starts, search in ~/.iMule/imule.conf the
+"[WebServer]" section and set "Enabled" to 1, and "Password" to the same
+as ECPassword above, or any other hash computed with the same method. It
+will listen on port 4711 by default, and can also be started by hand
+with the following command:
+    
+    $ imuleweb --imule-config-file=~/.iMule/imule.conf
+
+The address to access the page is http://localhost:4711 if accessing from
+the same computer, or http://IP_OR_REMOTE_NAME:4711 if not.
+
+
+Init script
+===========
+
+The imule-daemon package ships an init script in /etc/init.d. You can
+use this script to automatically start imuled on every system boot. To
+enable it, edit the file /etc/default/imule-daemon and give a value to
+the IMULED_USER variable (this should be normally your username, or some
+other if you wish to run imuled under a separate account).

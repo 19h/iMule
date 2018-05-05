@@ -1,0 +1,39 @@
+= Accessing via subversion =
+
+* First install svn, and launch a command like :
+
+{{{
+svn help
+}}}
+
+This should create a configuration directory in your home directory, something like ''~/.subversion''.
+
+* Edit the ''servers'' file in this directory, and tell svn to use your i2p proxy for sites of the ''i2p'' domain.
+
+
+''file : ~/.subversion/servers''
+{{{
+[groups]
+eepsites = *.i2p
+
+[eepsites]
+http-proxy-host = 127.0.0.1
+http-proxy-port = 4444
+http-compression = yes
+}}}
+
+* Then checkout the iMule repository :
+
+{{{
+svn co http://www.imule.i2p/svn/iMule/trunk iMule-trunk
+}}}
+
+This will create the ''iMule-trunk'' directory with iMule sources.
+
+* When you want to update to the latest revision, enter the ''iMule-trunk'' directory, and launch :
+
+{{{
+svn update
+}}}
+
+* If you want to be able to commit changes, send an email with the username and the password you wish to the address [mailto:mkvore@mail.i2p].

@@ -1,0 +1,5 @@
+imule	ICON	"imule.ico"
+
+#ifndef MSVC
+#include <wx/msw/wx.rc>
+#endif

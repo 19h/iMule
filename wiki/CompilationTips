@@ -1,0 +1,43 @@
+
+= Compiling iMule =
+
+----
+== For Linux ==
+----
+
+=== Needed tools and libraries ===
+ * Compiler
+   * gcc (version >= 4.2.0)
+   * gcj (included in gcc)
+ * Libraries
+   * wxWidget (version >= 2.8.1)
+
+=== Compilation instructions ===
+
+From iMule topmost directory (for instance ''iMule-trunk'' if you followed [wiki:SubVersion these] instuctions), type :
+
+{{{
+mkdir optimize
+cd optimize
+../configure --disable-debug --enable-optimize --enable-irouter
+make all
+}}}
+
+The ''imule'' executable should be put in the ''optimize/src'' directory (which must have been created by the ''configure'' command), along with a ''libgmp.so'' library.
+
+Then, to launch iMule :
+
+{{{
+cd src
+./imule
+}}}
+
+
+Of course, if you want to build the debug version, change the ''configure'' command :
+
+{{{
+../configure --enable-debug --disable-optimize --enable-irouter
+}}}
+
+The --enable-irouter flag is mandatory for version 1.2.1. It is optional for version 1.2.0. It did not even exist in previous versions.
+----

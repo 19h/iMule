@@ -1,0 +1,66 @@
+----
+= Version 1.2.1 =
+2007-10-13
+    * some SAM version 2.0 protocol included (not approved yet by I2P
+      maintainers)
+    * a new connection request will not suspend all data transfers as with v
+      1.2.0
+    * but until this protocol is in the official I2P, java code is included in
+      iMule, so gcj is needed again for compiling, even if you do not use the
+      internal I2P router
+    * this should not cause gc errors to come back
+    * BE CAREFUL to select an unused port for the SAM bridge, in the I2P
+      connection Preferences tab. Especially if you run the external I2P
+      router, DO NOT SELECT its SAM bridge, which still is version 1.0. iMule
+      uses an internal SAM bridge version 2.0.
+
+
+----
+= Version 1.1.1 =
+24-08-2007
+    * disable "file extension" check in Kad keyword publishing (as long as the
+      network remains so small)
+
+----
+= Version 1.1.0 =
+21-08-2007
+ * '''not compatible with 1.0.x'''
+ * > 4GB files supported !
+ * no more Onunhandledexception call (that caused exiting without printing the real error)... throw an exception instead (should help debugging)
+ * no more Connect button, neither "Bootstrap from known peers"
+ * status bar does not show ed2k connection state anymore
+ * version check implemented, if enabled in preferences (waits 2 mn before checking from www.imule.i2p)
+ * the keywords of a filename are published after the file itself, so that we can publish the right source counts with them, without waiting 5h (next publishing slot !)
+
+----
+= Version 1.0.5 =
+
+ * 1.0.4 - compatible
+ * bug removed : was exiting when emfriend.met could not be read correctly
+ * wxI2Psocket::Destroy adds the socket to objects removed on idle time --> sockets are now deleted, and the number of connections in the statistics graph is now correctly decreasing when a socket is closed.
+ * self publication in Kad, without calling the network (should be removed when/if the network grows and become stable enough)
+ * option added for keeping dead nodes in nodes.dat, and another option to record self node in nodes.dat (intended for distributing nodes.dat)
+
+----
+= Version 1.0.4 =
+
+ * 1.0.3 - compatible
+ * no more debug messages in the win32 executable (as this is not a debug version)
+ * reuse the same i2p destination for each outbound socket (saves time connecting)
+ * always keeps listening for incoming Kad peers, and try to reconnect when all peers are gone (no need for the user to clic on Connect when he comes back from work and see in despair that his mule is not only disconnected for 10 hours, but does not even try to reconnect !)
+ * some tunings of delays : after 10 minutes of inactivity, a socket is closed and the peer is reasked for the file
+
+----
+= Version 1.0.3 = 
+
+
+* The protocols are compatible with 1.0.2.
+* The Windows binary has been compiled with an optimization flag, so ... debug messages are not available anymore.
+* This version is much more stable : you can even launch the internal I2P router (at least I can !)
+
+Remaining problem: under Windows, on my 2GHz computer, the internal i2p router takes 100% CPU. Though it doesn't block the computer, as it has a low priority. Under Linux, however, it takes less CPU than the Java original version.
+----
+
+= Version 1.0.2 =
+* Protocol changed, so 1.0.2 is not compatible with 1.0.1.
+* version 1.0.2 waits up to 10 minutes for peers to respond, which gives much higher chance to establish connection.

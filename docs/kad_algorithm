@@ -1,0 +1,59 @@
+
+Publication de source :
+
+	C = liste des contacts connus
+	P = liste des contacts ayant publié
+	D = liste des contacts morts
+	pmin = nombre de publiants min
+	
+	arrêt quand :
+		- max(P) < min((C\D)\P) et |P|>=pmin
+		ou
+		(C\D)\P = vide
+		
+Etats des contacts :
+	0 : prêt pour demande de contacts
+	1 : en attente de contacts plus proches
+	2 : prêt pour demande de publication
+	3 : en attente de confirmation de publication
+	4 : ayant publié
+	5 : mort
+	
+Conteneurs :
+	m_known : ensemble
+	m_ask_for_contacts : liste ordonnée par distance
+	m_ask_for_data : liste ordonnée par distance
+	m_best_complete : liste ordonnée par distance
+	m_charged : liste ordonnée par date d'exécution
+	m_dead : ensemble
+	
+Algo :
+	(1) Contact C reçu :
+		Si (non m_known) 
+			C -> m_ask_for_contacts 
+			C -> m_known
+			
+	(2) Liste contacts reçue de C :
+		Si (C m_dead)
+			C -> pas m_dead
+		Si (C m_charged)
+			C -> pas m_charged
+		Pour c dans liste reçue, (1)
+		C -> m_ask_for_data
+		
+	(3) Confirmation publication reçue de C :
+		Si (C m_dead)
+			C -> pas m_dead
+		Si (C m_charged)
+			C -> pas m_charged
+		C -> m_best_complete
+		
+	Régulièrement :
+		Transfert m_charged -> m_dead
+		Test arrêt
+		si (existe C = min(m_ask_for_contacts, m_ask_for_data))
+			C -> m_charged
+			C -> pas m_ask_for_contacts, pas m_ask_for_data
+			requete C
+
+		

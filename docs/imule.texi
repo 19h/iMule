@@ -1,0 +1,600 @@
+\input texinfo   @c -*-texinfo-*-
+
+@c %**start of header
+@setfilename iMule.info
+@settitle iMule README 1.0
+@c %**end of header
+
+
+@include version.texi
+
+@copying
+This is the README file for iMule version @value{VERSION}.
+
+Last update on @value{UPDATED}.
+
+Copyright @copyright{} public domain.
+@end copying
+
+@titlepage
+@title iMule
+@subtitle The All-platform ed2k/I2P client
+
+@c The following two commands start the copyright page.
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c Output the table of contents at the beginning.
+@contents
+
+
+@ifnottex
+@node Top, About, (dir), (dir)
+@top Readme for iMule
+
+This is the README file for iMule version @value{VERSION}.
+
+Last update on @value{UPDATED}.
+@end ifnottex
+
+@menu
+* About::                       About iMule.
+* Installation::                Installation instruction
+* Nomad::                       Travelling with iMule
+* I2P router::                  Configuring the core of the network
+* First time configuration::    First time configuration
+* Bootstrapping::               First time launch
+* Other configuration options::  Optional configuration
+* Basic iMule Tips::            Tips
+* License::                     Kind of License
+* Developper::                  me
+* FAQ::                         Frequently asked questions
+* Want to help::                Developpers welcome
+* Miscellanous::                Remaining
+
+
+@end menu
+
+@node About, Installation, Top, Top
+@chapter About
+
+  iMule is a multiplatform ed2k/I2P client, fork of the aMule client, using the
+  wxWidgets class library. It was originally forked from the xMule project,
+  which in turn was forked from the lMule project. This is turn was the first
+  fork of eMule to run natively on Linux and other Unix-like systems.
+
+
+@node Installation, Nomad, About, Top
+@chapter Installation
+
+  Decompress the archive in some directory.
+
+
+@node Nomad, I2P router, Installation, Top
+@chapter Nomad or not nomad
+
+  iMule uses configuration files for keeping many informations. These files
+  can be kept either in the user's home folder or in iMule's installation folder.
+  The latter case is called "nomad", because you can then install iMule on
+  a removable disk and launch it from any computer with the same configuration.
+  iMule tests the existence of a file called "thisIsImuleConfigDir" in its
+  install directory in order to decide which configuration directory it should
+  use. If the file does not exist, then a subdirectory of the user's home
+  directory will be used.
+  
+  By default, iMule is nomad. You can change this either by removing the
+  file "thisIsImuleConfigDir" before running iMule, or by launching iMule,
+  unchecking the "nomad" option in the Preferences tab, and stopping/relaunching
+  iMule.
+
+  
+@node I2P router, First time configuration, Nomad, Top
+@chapter I2P router
+
+  iMule uses the I2P protocol for ensuring anonymous transfers. This
+  protocol is provided by a piece of software : the "I2P router".
+  You can get this software here : @url{http://www.i2p2.de/download}.
+
+  iMule also has an internal I2P router, that can replace the java I2P router
+  provided on the link above, but the internal I2P router is not
+  as efficient as the java one : it consumes much cpu.
+  
+  By default, iMule will try to launch its internal I2P router. You can change
+  that in the Preferences tab.
+  
+
+@node First time configuration, Bootstrapping, I2P router, Top
+@chapter First time configuration
+
+
+Decide if you want to use the internal router or the external router (advised).
+
+
+@section Configuration for the internal router
+
+Launch iMule and go to Preferences -> I2P connection.
+
+
+@enumerate
+@item 
+Check the top-most box called "Use internal I2P router"
+	This enables some configuration boxes : SAM port, I2P proxy port, 
+	TCP port, UDP port, and 7 other bandwidth options.
+@item 
+Make sure the default TCP and UDP ports are accessible from the Internet, 
+	or enter other values in the corresponding boxes so that these ports
+	are accessible from internet. Configure your firewall and/or your router
+	and/or your modem so that they are accessible from internet.
+	
+The other following options are not vital :
+
+@item 
+You can give the IP or the hostname of your router (for instance: mycomputer.dyndns.org)
+	in the "IP/dynIP" box, after having checked the "dynamic address" option.
+	This can accelerate the starting process of the I2P router.
+@item
+ Configure the 4 max. bandwidth boxes. They concern the maximum total bandwidth
+	used by the I2P router, and not only by your iMule transfers.
+
+@item
+Configure the anonymity level, i.e. the minimum number of I2P peers relaying
+	your messages (incoming and outgoing). 1 or 2 are good values. The higher
+	the values are, the slower the connections will be.
+@item
+Configure the ratio of your bandwidth you share for relaying messages from other
+	peers.
+CHECK that points 4) and 6) allow AT LEAST 16 kB/s of shared bandwidth. This is the
+minimum for a correct running of the I2P network.
+
+@item
+You can configure the SAM port of the internal router or keep the standard 7656 value
+	if no other application is using this port. SAM is the protocol iMule uses 
+	to communicate with the I2P router (even the internal router), and is also
+	used by other softwares, like the anonymous bittorrent software I2P-BT. So,
+	when iMule's internal router is launched, other apps can use its SAM port
+	as they would do with the standard router.
+	
+@item
+You can configure the I2P proxy port or keep the standard 4444 value. This is also
+	intended for use by other apps such as web browser : configure your browser
+	to use the HTTP Proxy at 127.0.0.1:4444, and it will be able to browse
+	eepSites (www over I2P) anonymously (check this by browsing www.imule.i2p
+	for instance !)
+
+@end enumerate
+
+
+
+
+@section Configuration for the external router
+
+THIS PART HAS BEEN UPDATED FOR I2P ROUTER VERSION 0.6.5.
+So, if you are running an older router, please update it !
+
+
+@enumerate
+
+@item
+You first have to configure your I2P router so that it launches the SAM server at startup.
+This SAM server is used by iMule to communicate with the router.
+
+
+@itemize
+@item
+Launch a web navigator and enter the address of the I2P router console in the address bar.
+This will probably be @url{http://127.0.0.1:7657}.
+
+@item
+Click on Configuration
+
+@item
+Click on Clients
+
+@item
+Check the box near SAMBridge
+
+@item
+Finally, click on 'Save Client Configuration'
+
+@end itemize
+
+
+@item
+Launch iMule and go to Preferences -> I2P connection. Uncheck the "internal router" box.
+
+@item
+Enter the IP address of your router in the first text box. It will probably be 127.0.0.1
+if the router is running on the same computer as iMule.
+
+@item
+The "port" box is not used anymore by iMule. Do not bother.
+
+@item
+Enter the SAM port of your router (if you did not change its value, it probably is 7656)
+
+@item
+Enter the HTTP Proxy port of your I2P (4444 by default). The I2P proxy is used by iMule
+for downloading information from www.imule.i2p (the nodes.dat file for bootstraping
+peer connections, and a version check file).
+
+@item
+Configure the anonymity levels of iMule's connections (as explained for the internal router).
+
+@end enumerate
+
+
+
+@node  Bootstrapping, Other configuration options, First time configuration, Top
+@chapter Bootstrapping
+
+  iMule is a Peer to peer application, and in order to enter the peers network,
+  it has to know at least one other iMule peer on start. The known peers are
+  kept in a file named "nodes.dat" in iMule's configuration directory. On first
+  use, you can copy the file provided in the archive into the configuration
+  directory. You can also click the "Nodes" button in iMule to try to download
+  a more recent nodes.dat file from iMule's website, but before doing so, you 
+  have to wait until iMule says it has successfully connected to the I2P
+  network.
+
+
+
+The remaining of this document has been pasted from aMule documentation and
+are more or less relevant for iMule (I did not check everything).
+
+@node Other configuration options, Basic iMule Tips, Bootstrapping, Top
+@chapter Other configuration options
+
+
+@itemize
+  
+@item
+Go to the "Preferences" tab
+
+@item
+Enter a nickname or leave as the default value.
+
+@item
+Enter the "Download Capacity" and "Upload Capacity" according to your
+internet connection. All values in iMule are kiloBytes (kB), but your
+Internet Service Provider's numbers are most likely kiloBits (kb). 
+    
+8 kiloBits make up 1 kiloByte, so if your Internet Connection is 768kb
+Downstream and 128kb Upstream (i.e. German Telekom DSL), your correct
+values are:
+
+@multitable {@code{Downstream: 0}}{768kb / 8 = 96kB, so you enter 96 as "Download Capacity"}
+@item @code{Downstream:}
+@tab 768kb / 8 = 96kB, so you enter 96 as "Download Capacity"
+@item @code{Upstream:}
+@tab
+128kb / 8 = 16kB, so you enter 16 as "Upload Capacity"
+@end multitable
+
+
+Anyway, these values are used to calculate the current bandwidth usage for
+display purposes only (mainly for statistics). Nevertheless, you need to
+know them to determine the following down/upload limits:
+
+@item
+Enter "Download Limit" and "Upload Limit"  (IMPORTANT!)
+    
+
+@table @asis
+@item Download Limit:
+Leave this at 0, which stands for "no limit". However, if iMule uses
+too much bandwidth and causes problems with other applications using
+your internet connection, it would be a good idea to limit this to
+aproximetly 80% of your downstream capacity.
+ 
+@item Upload Limit:
+It is recommended that you set this limit to around 80% of your actual
+upstream capacity, in order to avoid degrading the performance of your
+connection.
+
+@end table
+
+Setting the Upload Limit to a value less than 10 will automatically reduce
+your Download Limit after the following schema:
+
+
+@multitable {Upload Limit}{Upload Limit * 4}
+@item Upload Limit
+@tab Max Download
+@item >= 10
+@tab No limit
+@item < 10
+@tab Upload Limit * 4
+@item <  4
+@tab Upload Limit * 3
+@end multitable
+
+
+NOTE: 56k Modem users: iMule only accepts integral values for these
+settings, you can't enter 1.6 or whatever your sweet-spot setting
+is. Sorry.
+
+
+@item
+"Maximum Connections":
+
+As a general rule, set it to 500 - 2000.
+
+
+@item
+"Maximum Sources per File":
+
+    This depends on how many files you tend to download at a time, if you 
+    tend to download few files, high values are acceptable, otherwise go
+    for lower values so that all files will be able to get sources.
+
+
+@item
+Choose the directories you want to share with other users:
+
+
+    DO NOT SHARE YOUR COMPLETE HARDDISK!
+    
+    It is suggested that you either use the "Incoming" folder or a seperate
+    folder for the files you wish to share, to avoid inadvertedly sharing
+    private files.
+
+    If you share more than 200 files, you should consider that some servers
+    have a hard limit due to resource constraints, which means that you may
+    be kicked from them if you share too many files or that some of your
+    files won't be populated to the network through that server. So it is not
+    always a good idea to share lots of files.
+
+@item
+Other:
+
+    The other options are pretty self-explanatory. If you don't know what it
+    does, don't touch it as a general rule. More information on getting started
+    can be found in the iMule wiki:
+      @url{http://www.imule.org/wiki/index.php/Getting_Started}
+
+
+    Don't forget to connect to a server, or you probably won't download too much.
+@end itemize
+
+
+@node Basic iMule Tips, License, Other configuration options, Top
+@chapter Basic iMule Tips
+
+
+@itemize
+
+@item
+@strong{NEVER run iMule as root}.
+
+@item
+If you are behind a firewall or router, be sure that the ports have been
+    opened. The default ports are @emph{8887} (TCP) and @emph{8886} (UDP). If
+    these are blocked, you will have a VERY LOW connection, or no connection
+    at all.
+
+@item
+Set your temp and shared directories in Preferences->Directories.
+To recursively select a certain directory, right-click over it.
+
+@item
+@strong{You should NOT share}
+
+@itemize
+@item
+Your temp download directory!
+
+@item
+Your /etc directory
+
+@item
+Probably not your /var, /lib, /boot, or /usr directory
+
+@item
+Certainly make sure that any really confidential files (password files,
+        private SSH keys, credit card numbers :) are *not* shared. So generally
+        do not share your entire home directory, although you might want to
+        share some files or directories in it.
+
+@end itemize
+
+
+@item
+Remember that you get certain download priveledges with those clients
+    (iMule, eMule, etc users) to whom you upload files, in the form of reduced
+    queue waits.
+
+@end itemize
+
+
+@section Transfer icons
+
+  To find descriptions of the various icons found inside iMule, take a look at
+  @url{http://@/www.amule.org/wiki/@/index.php/Getting_Started@/#Icons_and_What_They_Signify}
+
+@node License, Developper, Basic iMule Tips, Top
+@chapter License
+  iMule is released under the GNU General Public License. 
+  See the "COPYING" file for details.
+
+@node Developper, FAQ, License, Top
+@chapter Developper
+mkvore
+
+
+@node FAQ, Want to help, Developper, Top
+@chapter FAQ
+
+
+@section I'd like to search for specific file types, what filter stands for which files?
+
+@multitable {@emph{File Type}}{.avi .mpg .mpeg .ram .rm .vob .divx .mov .ogg .vivo}
+@item @emph{File Type}
+@tab @emph{Extensions found}
+@item Audio
+@tab .mp3 .mp2 .mpc .wav .ogg .aac .mp4 .ape .au .wma
+@item Video
+@tab .avi .mpg .mpeg .ram .rm .vob .divx .mov .ogg .vivo
+@item Program
+@tab .exe .com
+@item Archive
+@tab .zip .rar .ace .tar.gz .tar.bz2 .Z .arj
+@item CDImage
+@tab .bin .cue .iso .nrg .ccd .sub .img
+@item Picture
+@tab .jpg .jpeg .bmp .gif .tif .png
+@end multitable
+  
+
+@section What are all those fancy colors in the download progress bar about?
+
+  Each download in the the transfers window has a coloured bar to show current
+  file availability and progress.
+
+@itemize
+@item
+Black shows the parts of the file you already have
+@item
+Red indicates a part missing in all known sources
+@item
+Different shades of blue represent the availability of this part in the
+sources. The darker the blue is the higher the availability
+@item
+Yellow denotes a part being downloaded
+@item
+The green bar on top shows the total download progress of this file
+@end itemize
+
+  If you expand the download you see its sources with the corresponding
+  bar. Here the colours have a slightly different meaning:
+
+@itemize
+@item
+Black shows parts you are still missing
+@item
+Silver stands for parts this source is also missing
+@item
+Green indicates parts you already have
+@item
+Yellow denotes a part being uploaded to you
+@end itemize
+
+Learning how the progress bar works will greatly help your understanding
+of the eD2k network.
+
+  
+@section Where can I get more information?
+
+Here are some links that might be of your interest:
+
+@itemize
+
+@item
+iMule forum
+@url{http://forum.i2p/viewforum.php?f=30}
+
+@item
+iMule Wiki
+@url{http://www.imule.i2p/trac/wiki}
+
+@item
+aMule Wiki (documentation pages)
+@url{http://wiki.amule.org}
+
+@item
+aMule forums
+@url{http://forum.amule.org}
+
+@item
+eMule documents
+@url{http://www.emule-project.net/home/perl/help.cgi}
+
+@end itemize
+ 
+
+@node Want to help, Miscellanous, FAQ, Top
+@chapter Want to help?
+
+  iMule is a free software project and requires the cooperation of its users
+  to improve the quality of the software. We welcome all contributions to the
+  project in the form of new features, bug fixes, feature requests, etc.
+
+  If you are not a programmer you can still contribute by providing good bug
+  reports  when you come accross a problem with iMule. A good bug report gives
+  the iMule Team information enough to reproduce the bug (so we can see it in
+  action) and fix it. If possible, try to isolate under which the bug occurs 
+  (eg. does it happen on some specific window, with some specific files, some
+  specific conditions etc.) and provide as much detail as you can in your
+  report.
+
+  If you are a programmer and fix a bug you observe, please send us a patch or
+  a note about how you fixed the problem.
+
+
+@node Miscellanous,  , Want to help, Top
+@chapter IRC, Links and Contact
+
+@itemize
+
+@item
+  IRC: Channel #i2p on irc.postman.i2p (127.0.0.1:6668)
+
+
+@item
+  iMule homepage
+
+      @url{http://www.imule.i2p}
+
+@item
+  aMule related links :
+
+
+@itemize
+
+@item
+      @url{http://www.amule.org/wiki/index.php/FAQ_ed2k}
+
+@item
+      @url{http://www.amule.org/wiki/index.php/iMule}
+
+@item
+      @url{http://www.amule.org/wiki/index.php/FAQ_iMule}
+
+@item
+      @url{http://www.amule.org/wiki/index.php/FAQ_utils}
+
+@item
+      @url{http://www.amule.org/wiki/index.php/Getting_Started}
+
+@item
+      @url{http://www.amule.org/wiki/index.php/iMule_problems}
+
+@end itemize
+
+
+
+@item
+  wxWidgets toolkit homepage
+
+      @url{http://www.wxwidgets.org}
+
+
+@item
+  eMule homepage
+
+      @url{http://www.emule-project.net}
+
+@end itemize
+
+
+@section Legal Notice
+
+  iMule is an interface to the ed2k/i2p network. As such, the iMule developers have
+  absolutely no control or say over what is transferred on this medium and
+  cannot be held liable for any non-personal copyright infringements or other
+  illegal activities.
+
+
+
+@bye

@@ -1,0 +1,47 @@
+Source: imule
+Section: net
+Priority: optional
+Maintainer: MKVore <mkvore@mail.i2p>
+Build-Depends:
+ texinfo,
+ autotools-dev,
+ autopoint,
+ debhelper (>= 7.0.50),
+ quilt,
+##
+ libcrypto++-dev,
+ libgd2-xpm-dev,
+ libgeoip-dev,
+ libglib2.0-dev,
+ libpng12-dev,
+ libreadline-dev,
+ libwxgtk3.0-dev,
+ wx3.0-i18n,
+ zlib1g-dev,
+##
+ binutils-dev,
+ bison,
+ flex,
+ gawk,
+Standards-Version: 3.9.5
+Homepage: http://imule.i2p
+#Vcs-Git: git://git.debian.org/collab-maint/imule.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/imule.git;a=summary
+
+Package: imule
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: amule-utils, amule-cas, amule-wxcas
+Suggests: amule-xas, amule-ed2k
+Description: I2P eMule P2P Client
+ iMule stand for I2P eMule file-sharing program, it is also
+ another fork of the xMule project. It connects to eDonkey2000
+ network, supports Linux, *BSD and MacOS X platforms, and has
+ a new vision of the GUI
+ .
+ iMule runs on top of the I2P network abstraction layer, so as to ensure
+ anonymity of the clients.
+ The I2P router has to be installed and configured before running iMule.
+ The SAM protocol has to be enabled in the I2P router before running iMule.
+ I2P can be downloaded here : http://www.i2p2.de/download.html
+

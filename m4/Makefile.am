@@ -1,0 +1,34 @@
+EXTRA_DIST = \
+AC_PROG_BISON.m4 \
+build-tools.m4 \
+check_gnu_make.m4 \
+codeset.m4 \
+cryptopp.m4 \
+fallocate.m4 \
+gcj.m4 \
+gdlib.m4 \
+GeoIP.m4 \
+gettext.m4 \
+glib-2.0.m4 \
+glibc21.m4 \
+iconv.m4 \
+intdiv0.m4 \
+inttypes_h.m4 \
+inttypes.m4 \
+inttypes-pri.m4 \
+isc-posix.m4 \
+lcmessage.m4 \
+lib-ld.m4 \
+lib-link.m4 \
+libpng.m4 \
+lib-prefix.m4 \
+libupnp.m4 \
+nls.m4 \
+pkg.m4 \
+progtest.m4 \
+readline.m4 \
+stdint_h.m4 \
+uintmax_t.m4 \
+ulonglong.m4 \
+wxwin.m4 \
+zlib.m4

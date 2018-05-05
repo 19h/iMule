@@ -1,0 +1,72 @@
+################## nouveau ####################
+
+* lancer updateI2P.sh en mode "pas par pas"
+
+* lancer makeMakefile.sh
+
+###############################################
+
+
+############ ancienne pocédure ################
+
+* mettre à jour le dépôt monotone 
+
+ mtn -d i2p.mtn pull 192.168.11.1:8998 i2p.i2p
+
+* Aller dans branches/i2p-versions/src-libs-i2p.
+  (éventuellement le récupérer depuis le svn)
+
+cd ..
+svn co branches/i2p-versions/src-libs-i2p rawI2P
+
+
+* Copier makeMakefile :
+cd rawI2P
+cp ../i2p/makeMakefile.am.sh .
+
+* Supprimer les fichiers java
+find addressbook freenet gnu net org -name "*.java" -exec rm {} \;
+
+* récupérer la version cible de I2P depuis monotone ou la mettre à jour
+mtn --db=/home/antoine/compilation/i2p/monotone/i2p.mtn co --revision=0801db0cfcde1b6cec961b490a357168eadf6943 corei2p
+
+* ou
+pushd corei2p && mtn update && popd
+
+* Appliquer makeMakefile :
+./makeMakefile.am.sh
+
+
+* Aller voir dans les répertoires addressbook, freenet, gnu, net, org
+  s'il y a des fichiers java non versionnés, et les ajouter au svn
+  (avec konqueror-svn)
+
+svn add `svn status | grep '?' | cut -c8-`
+
+* retirer les fichiers qui ont disparu...
+
+svn rm `svn status | grep '!' | cut -c8-`
+
+* commiter
+
+svn commit -m "I2P 0.6.1.30 --> I2P 928aadc3796083b8412829c2d18e95fdeecd8196"
+svn update
+
+
+* Regarder de quelle révision date la dernière mise-à-jour de i2p
+
+svn log
+ou
+svn log --stop-on-copy
+
+ici : 372
+
+* tenter d'appliquer les différences sur le trunk
+
+pushd ../i2p
+svn merge -r 372:HEAD ../rawI2P
+
+
+* résoudre les conflits, puis commiter
+
+svn commit -m "libs/i2p mergé avec 372:375 de branches/i2p-versions/src-libs-i2p (I2P 0.6.3 : 5adc09f6795b582e46320fe635d0946e5eda4d74)"

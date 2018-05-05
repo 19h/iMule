@@ -1,0 +1,3 @@
+#usr/bin/imuled
+usr/bin/imuleweb
+#../../debian/imuled_home_wrapper.sh	/usr/share/imule

@@ -1,0 +1,7 @@
+handle SIGPWR nostop noprint
+handle SIGXCPU nostop noprint
+handle SIGHUP nostop noprint
+handle SIGPIPE nostop noprint
+dir /home/antoine/compilation/iMule-next/src/src
+dir /home/antoine/compilation/iMule/3d-party/wxWidget/wxwidgets2.8-2.8.9.1/src
+dir /home/antoine/compilation/iMule-next/src/src/libs/i2p

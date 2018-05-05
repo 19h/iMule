@@ -1,0 +1,8 @@
+docs/man/ed2k.1
+docs/man/ed2k.*.1
+docs/man/imulecmd.1
+docs/man/imulecmd.*.1
+src/utils/cas/docs/cas.1
+src/utils/cas/docs/cas.*.1
+src/utils/aLinkCreator/docs/alcc.1
+src/utils/aLinkCreator/docs/alcc.*.1

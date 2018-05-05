@@ -1,0 +1,9 @@
+usr/bin/alc
+#usr/bin/imulegui
+usr/bin/wxcas
+usr/share/applications/wxcas.desktop
+usr/share/applications/alc.desktop
+#usr/share/applications/imulegui.desktop
+usr/share/pixmaps/wxcas.xpm
+usr/share/pixmaps/alc.xpm
+#usr/share/pixmaps/imulegui.xpm

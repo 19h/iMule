@@ -1,0 +1,127 @@
+#%.Po::
+#	echo \#dummy > $@
+#.java.h:
+#	$(GCJ) -C $< $(BUILT_SOURCES_INCLUDES) -I$
+#	sh -c 'basetargetclassname=$(*F) ; \
+#		basetargetdir=$(*D) ; \
+#		basesourcedir=`echo $< | sed 's/[^/]*\.java//g'` ; \
+#		for fc in $$basesourcedir$$basetargetclassname*.class ; do \
+#			childsourcepath=$${fc%%.class} ; \
+#			childclassname=$${childsourcepath##.*/} ; \
+#			childtargetpath=$$basetargetdir/$$childclassname ; \
+#			$(GCJ)h $(BUILT_SOURCES_INCLUDES) $$childtargetpath ; \
+#		done'
+#AM_GCJFLAGS = $(INCLUDES)
+#AM_CFLAGS   = $(WX_CFLAGS) $(GCJ_FLAGS) fdsqoucdsqof
+#CXXFLAGS = $(WX_CFLAGS) $(GCJ_FLAGS) rezrezvsg
+#CXX         = $(GCJ) -c
+#CXXCOMPILE  = $(GCJCOMPILE) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CXXFLAGS)
+GCJLINK     = $(GCJ) -o $@ $(LDADD)
+AM_CXXFLAGS = $(WX_CXXFLAGS)
+AM_GCJFLAGS = $(WX_GCJFLAGS)
+
+EXTRA_PROGRAMS = test1 test2 test3 test4 test5 test7
+noinst_PROGRAMS =
+
+test1_LINK    = $(GCJLINK)
+test1_SOURCES = test.java
+test1_LDADD   = $(top_builddir)/src/libs/i2p/libcorei2p.a $(WXBASE_LIBS) -lstdc++
+test1_LDFLAGS = --main=test
+
+test2_LINK    = $(GCJLINK)
+test2_SOURCES = test2.cpp JConversions.cpp
+test2_CXXFLAGS= $(WXBASE_CXXFLAGS)
+test2_LDADD   = $(WXBASE_LIBS) -lstdc++ $(top_builddir)/src/libs/i2p/libcorei2p.a
+
+test3_LINK    = $(GCJLINK)
+test3_SOURCES = test3.cpp JConversions.cpp
+test3_CXXFLAGS= $(WXBASE_CXXFLAGS)
+test3_LDADD   = $(WXBASE_LIBS) -lstdc++ $(top_builddir)/src/libs/i2p/libcorei2p.a
+
+test4_LINK    = $(GCJLINK)
+test4_SOURCES = test4j.java test4.cpp JConversions.cpp
+test4_CXXFLAGS= $(WXBASE_CXXFLAGS) -I$(srcdir) -I.
+test4_LDADD   = $(WXBASE_LIBS) -lstdc++ $(top_builddir)/src/libs/i2p/libcorei2p.a
+test4_LDFLAGS = -static-libgcj
+test4_DEPENDENCIES = test4j.h test4j.java test4.cpp JConversions.cpp
+
+test5_LINK    = $(GCJLINK)
+test5_SOURCES = test5j.java test5.cpp JConversions.cpp
+test5_CXXFLAGS= $(WX_CXXFLAGS) -I$(srcdir) -I.
+test5_LDADD   = $(WX_LIBS) -lstdc++ $(top_builddir)/src/libs/i2p/libcorei2p.a
+test5_LDFLAGS = -static-libgcj
+test5_DEPENDENCIES = test5j.h test5j.java test5.cpp JConversions.cpp
+
+test7_SOURCES = test7-socket.cpp
+test7_CXXFLAGS= $(WX_CXXFLAGS) -I$(srcdir) -I.
+test7_LDADD   = $(WX_LIBS) -L. -lmulei2p
+test7_DEPENDENCIES = libmulei2p.a
+
+#.java.h:
+#	$(GCJ) -C $< -I$(srcdir) -I. -d . && touch $(*).class && $(GCJ)h $(*) -I$(srcdir) -I. && touch $(*).h
+
+
+#.java.class:
+#	$(GCJ) -C $< -d $(srcdir) $(BUILT_SOURCES_INCLUDES)
+
+INCLUDES =      -I$(top_srcdir)/src \
+		-I$(top_srcdir)/src/libs \
+		-I$(top_srcdir)/src/libs/i2p
+
+ARFLAGS = cq
+libcorei2p_a_AR = sh -c ' \
+	nbSources=$$\# ; \
+	i=0 ; \
+	sourcesList= ; \
+	for c in $$* ; do \
+		i=$$(($$i+1)) ; \
+		sourcesList="$$sourcesList $$c" ; \
+		if [ $$(($$i%100)) -eq 0 -o $$(($$i)) -eq $$\# ] ;\
+		then \
+			echo $$i $$sourcesList ; \
+			$(AR) $(ARFLAGS) $$0 $$sourcesList ; \
+			sourcesList= ; \
+		fi ; \
+	done'
+
+
+javasources.headers: javasources.jar
+	$(GJAVAH) -cni -all . && touch javasources.headers
+
+javasources.jar: javasources.classes_stamp
+	find . -name "*.class" | $(JAR) -@ -c -f javasources1.jar && mv javasources1.jar javasources.jar
+
+javasources.classes_stamp: javasources.list
+	gcj -C -d . @javasources.list && touch $@
+
+javasources.list: $(javasources)
+	rm -f javasources.list
+	touch javasources.list
+	for c in $^ ; do echo $$c >> javasources.list ; done
+
+$(javasources):
+	./link_coreI2P.sh
+
+
+EXTRA_LIBRARIES  = libcorei2p.a
+noinst_LIBRARIES = libmulei2p.a
+noinst_HEADERS = $(corei2pheaders) $(mulei2pheaders) CSamDefines.h
+
+if COREI2P
+noinst_LIBRARIES += libcorei2p.a
+BUILT_SOURCES     = javasources.headers
+endif
+
+
+javasourceso_files = $(patsubst %.java,%.o, $(javasources))
+
+$(javasourceso_files): %.o: %.java
+	find . -path "./$(@:.o=)\$$*.class" -o -path ./$(@:.o=.class) \
+	| xargs $(GCJCOMPILE) $(GCJFLAGS) -c -o $@
+
+libmulei2p_a_SOURCES = $(mulei2psources)
+libcorei2p_a_SOURCES = $(corei2pCsources)
+libcorei2p_a_LIBADD = $(javasourceso_files)
+
+#libcorei2p_a_SOURCES = javasources.jar $(corei2pCsources)
+libcorei2p_a_DEPENDENCIES = javasources.headers $(javasourceso_files)

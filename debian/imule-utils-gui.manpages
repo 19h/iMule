@@ -1,0 +1,6 @@
+#docs/man/imulegui.1
+#docs/man/imulegui.*.1
+src/utils/wxCas/docs/wxcas.1
+src/utils/wxCas/docs/wxcas.*.1
+src/utils/aLinkCreator/docs/alc.1
+src/utils/aLinkCreator/docs/alc.*.1

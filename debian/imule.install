@@ -1,0 +1,24 @@
+../../debian/imuled_home_wrapper.sh	/usr/share/imule
+../../debian/schemas/imule-gnome-support.schemas /usr/share/gconf/schemas
+#usr/bin/alc
+#usr/bin/alcc
+#usr/bin/cas
+#usr/bin/ed2k
+usr/bin/imule
+#usr/bin/imulecmd
+usr/bin/imuled
+usr/bin/imulegui
+usr/bin/imuleweb
+#usr/bin/wxcas
+#usr/share/applications/alc.desktop
+usr/share/applications/imule.desktop
+usr/share/applications/imulegui.desktop
+#usr/share/applications/wxcas.desktop
+#usr/share/casdata
+usr/share/imule/skins
+usr/share/imule/webserver
+usr/share/locale
+#usr/share/pixmaps/alc.xpm
+usr/share/pixmaps/imulegui.xpm
+usr/share/pixmaps/imule.xpm
+#usr/share/pixmaps/wxcas.xpm

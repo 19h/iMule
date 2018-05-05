@@ -1,0 +1,3 @@
+?package(imule):needs="X11" section="Applications/Network/File Transfer"\
+  title="imule" command="/usr/bin/imule"\
+  icon="/usr/share/pixmaps/imule.xpm"

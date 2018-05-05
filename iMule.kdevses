@@ -1,0 +1,258 @@
+<?xml version = '1.0' encoding = 'UTF-8'?>
+<!DOCTYPE KDevPrjSession>
+<KDevPrjSession>
+ <DocsAndViews NumberOfDocuments="55" >
+  <Doc0 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/kademlia/Kademlia.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc0>
+  <Doc1 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/kademlia/Kademlia.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc1>
+  <Doc2 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/BaseClient.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc2>
+  <Doc3 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/ExternalConn.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc3>
+  <Doc4 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/amule.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc4>
+  <Doc5 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/net/KademliaUDPListener.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc5>
+  <Doc6 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/routing/Contact.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc6>
+  <Doc7 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/routing/Contact.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc7>
+  <Doc8 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/Packet.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc8>
+  <Doc9 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/build/lindbg/src/logfile" >
+   <View0 Encoding="" Type="Source" />
+  </Doc9>
+  <Doc10 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/MuleUDPSocket.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc10>
+  <Doc11 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/DataToText.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc11>
+  <Doc12 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/include/protocol/kad2/Client2Client/UDP.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc12>
+  <Doc13 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/include/protocol/kad/Client2Client/UDP.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc13>
+  <Doc14 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/include/protocol/Protocols.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc14>
+  <Doc15 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/include/protocol/kad2/Client2Client/TCP.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc15>
+  <Doc16 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/net/PacketTracking.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc16>
+  <Doc17 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/kademlia/Search.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc17>
+  <Doc18 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/routing/RoutingZone.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc18>
+  <Doc19 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/routing/RoutingBin.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc19>
+  <Doc20 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/routing/RoutingBin.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc20>
+  <Doc21 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/SearchList.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc21>
+  <Doc22 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/kademlia/SearchManager.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc22>
+  <Doc23 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/Tag.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc23>
+  <Doc24 NumberOfViews="1" URL="file:///home/antoine/compilation/aMule-2.2.5/src/SearchList.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc24>
+  <Doc25 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/include/tags/ServerTags.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc25>
+  <Doc26 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/include/tags/FileTags.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc26>
+  <Doc27 NumberOfViews="1" URL="file:///home/antoine/compilation/aMule-2.2.5/src/include/tags/FileTags.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc27>
+  <Doc28 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/amuleDlg.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc28>
+  <Doc29 NumberOfViews="1" URL="file:///usr/include/wx-2.8/wx/longlong.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc29>
+  <Doc30 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/amule-gui.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc30>
+  <Doc31 NumberOfViews="1" URL="file:///usr/include/wx-2.8/wx/string.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc31>
+  <Doc32 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/SearchFile.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc32>
+  <Doc33 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/SearchFile.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc33>
+  <Doc34 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/GuiEvents.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc34>
+  <Doc35 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/DownloadListCtrl.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc35>
+  <Doc36 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/BarShader.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc36>
+  <Doc37 NumberOfViews="1" URL="file:///home/antoine/compilation/aMule-2.2.5/src/BarShader.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc37>
+  <Doc38 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/BarShader.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc38>
+  <Doc39 NumberOfViews="1" URL="file:///home/antoine/compilation/aMule-2.2.5/src/BarShader.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc39>
+  <Doc40 NumberOfViews="1" URL="file:///home/antoine/compilation/aMule-2.2.5/src/DownloadListCtrl.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc40>
+  <Doc41 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/SharedFilesCtrl.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc41>
+  <Doc42 NumberOfViews="1" URL="file:///home/antoine/compilation/aMule-2.2.5/src/SharedFilesCtrl.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc42>
+  <Doc43 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/SharedFilesCtrl.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc43>
+  <Doc44 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/FileDetailDialog.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc44>
+  <Doc45 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule/3d-party/wxWidget/wxwidgets2.8-2.8.9.1/src/gtk/utilsgtk.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc45>
+  <Doc46 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/AddFileThread.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc46>
+  <Doc47 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/ClientUDPSocket.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc47>
+  <Doc48 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/kademlia/kademlia/SearchManager.h" >
+   <View0 Encoding="" Type="Source" />
+  </Doc48>
+  <Doc49 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/SharedFileList.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc49>
+  <Doc50 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/PartFile.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc50>
+  <Doc51 NumberOfViews="1" URL="file:///home/antoine/compilation/aMule-2.2.5/src/SharedFileList.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc51>
+  <Doc52 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/ThreadTasks.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc52>
+  <Doc53 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/ThreadScheduler.cpp" >
+   <View0 Encoding="" Type="Source" />
+  </Doc53>
+  <Doc54 NumberOfViews="1" URL="file:///home/antoine/compilation/iMule-next/src/src/ThreadTasks.h" >
+   <View0 Encoding="" line="52" Type="Source" />
+  </Doc54>
+ </DocsAndViews>
+ <pluginList>
+  <kdevdebugger>
+   <breakpointList>
+    <breakpoint0 location="/home/antoine/compilation/iMule/src/src/libs/ec/ECPacket.cpp:876" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="0" >
+     <tracedExpressions/>
+    </breakpoint0>
+    <breakpoint1 location="/home/antoine/compilation/iMule-next/src/src/ClientUDPSocket.cpp:148" type="1" tracingFormatString="" traceFormatStringEnabled="0" condition="" tracingEnabled="0" enabled="1" >
+     <tracedExpressions/>
+    </breakpoint1>
+   </breakpointList>
+   <showInternalCommands value="1" />
+  </kdevdebugger>
+  <kdevastyle>
+   <Extensions ext="*.cpp *.h,*.c *.h,*.cxx *.hxx,*.c++ *.h++,*.cc *.hh,*.C *.H,*.diff,*.inl,*.java,*.moc,*.patch,*.tlh,*.xpm" />
+   <AStyle IndentPreprocessors="0" FillCount="4" PadParenthesesOut="1" IndentNamespaces="1" IndentLabels="1" Fill="Tabs" MaxStatement="40" Brackets="Break" MinConditional="-1" IndentBrackets="0" PadParenthesesUn="1" BlockBreak="0" KeepStatements="1" KeepBlocks="1" BlockIfElse="0" IndentSwitches="1" PadOperators="0" FStyle="UserDefined" IndentCases="0" FillEmptyLines="0" BracketsCloseHeaders="0" BlockBreakAll="0" PadParenthesesIn="1" IndentClasses="1" IndentBlocks="0" FillForce="0" />
+  </kdevastyle>
+  <kdevbookmarks>
+   <bookmarks>
+    <bookmark url="/home/antoine/compilation/iMule-next/src/src/PartFile.h" >
+     <mark line="346" />
+     <mark line="366" />
+     <mark line="419" />
+     <mark line="439" />
+     <mark line="390" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/DeadSourceList.cpp" >
+     <mark line="127" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/aMule-2.2.5/src/kademlia/net/KademliaUDPListener.cpp" >
+     <mark line="1808" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/Preferences.h" >
+     <mark line="205" />
+     <mark line="665" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/PartFile.cpp" >
+     <mark line="3585" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/libs/i2p/coreI2P/core/java/src/net/i2p/util/SimpleScheduler.java" >
+     <mark line="116" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/libs/i2p/CI2PRouterThread.java" >
+     <mark line="242" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/SHAHashSet.cpp" >
+     <mark line="497" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/PrefsUnifiedDlg.cpp" >
+     <mark line="359" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/libs/i2p/wxI2PSocketClient.cpp" >
+     <mark line="285" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/amule.cpp" >
+     <mark line="1467" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule-next/src/src/kademlia/routing/Contact.cpp" >
+     <mark line="138" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule-next/src/src/kademlia/net/KademliaUDPListener.cpp" >
+     <mark line="1691" />
+     <mark line="1864" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/libs/i2p/coreI2P/apps/sam/java/src/net/i2p/sam/SAMv1Handler.java" >
+     <mark line="303" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/release.sh" >
+     <mark line="257" />
+     <mark line="23" />
+     <mark line="232" />
+    </bookmark>
+    <bookmark url="/home/antoine/compilation/iMule/src/src/Preferences.cpp" >
+     <mark line="975" />
+     <mark line="962" />
+    </bookmark>
+   </bookmarks>
+  </kdevbookmarks>
+  <kdevsubversion>
+   <subversion base="" />
+  </kdevsubversion>
+  <kdevvalgrind>
+   <executable path="" params="" />
+   <valgrind path="/usr/bin/valgrind" params=" --tool=memcheck --leak-check=yes" />
+   <calltree path="valgrind" params="--tool=callgrind" />
+   <kcachegrind path="kcachegrind" />
+  </kdevvalgrind>
+ </pluginList>
+</KDevPrjSession>

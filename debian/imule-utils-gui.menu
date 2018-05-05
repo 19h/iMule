@@ -1,0 +1,12 @@
+?package(imule-utils-gui):needs="X11" section="Applications/Network/File Transfer"\
+  title="iMule Stats" command="/usr/bin/wxcas"\
+  icon="/usr/share/pixmaps/wxcas.xpm"
+
+?package(imule-utils-gui):needs="X11" section="Applications/Network/File Transfer"\
+  title="iMule Link Creator (alc)" command="/usr/bin/alc"\
+  icon="/usr/share/pixmaps/alc.xpm"
+
+?package(imule-utils-gui):needs="X11" section="Applications/Network/File Transfer"\
+  title="iMule GUI" command="/usr/bin/imulegui"\
+  icon="/usr/share/pixmaps/imulegui.xpm"
+

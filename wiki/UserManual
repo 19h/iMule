@@ -1,0 +1,12 @@
+= User Guide =
+
+Well, only testing suggestions for the moment, but feel free to make changes...
+
+* For test purpose, try searching for ''heroes'' or ''4400'' once connected to my node.
+
+* For bootstaping the connection to the iMule network, you can download some nodes keys from iMule by clicking next to ''http://www.imule.i2p/nodes.dat'', up left in the ''Network'' tab.
+
+* You can also paste a key in the ''New node'' box up right in the ''Network'' tab.
+
+Follow [wiki:DestinationsList this link] to find '''existing keys''' and edit this page to leave your own key.
+

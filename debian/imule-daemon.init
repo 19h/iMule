@@ -1,0 +1,101 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          imule-daemon
+# Required-Start:    $local_fs $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Should-Start:      $network
+# Should-Stop:       $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Daemonized version of iMule.
+# Description:       Starts the iMule daemon with the user specified in
+#                    /etc/default/imule-daemon.
+### END INIT INFO
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+
+PROGNAME=imuled
+DESC="iMule daemon"
+PKGNAME="imule-daemon"
+DAEMON=/usr/bin/imuled
+SCRIPTNAME=/etc/init.d/$PKGNAME
+WRAPPER=/usr/share/imule/imuled_home_wrapper.sh
+
+[ -x "$DAEMON" ] || exit 0
+[ -r /etc/default/$PKGNAME ] && . /etc/default/$PKGNAME
+
+. /lib/init/vars.sh # has VERBOSE
+. /lib/lsb/init-functions
+
+if [ -z "$IMULED_USER" ]; then
+    log_warning_msg \
+	"Not starting $DESC, IMULED_USER not set in /etc/default/$PKGNAME."
+    exit 0
+fi
+
+do_start()
+{
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+	start-stop-daemon --start --quiet --exec $DAEMON --user "$IMULED_USER" --chuid "$IMULED_USER" --test >/dev/null || return 1
+	start-stop-daemon --start --quiet --exec $WRAPPER --user "$IMULED_USER" --chuid "$IMULED_USER" >/dev/null || return 2
+}
+
+do_stop()
+{
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	start-stop-daemon --stop --quiet --retry="TERM/30/KILL/5" --exec $DAEMON --user "$IMULED_USER" --chuid "$IMULED_USER" 
+	return "$?"
+}
+
+
+case "$1" in
+  start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$PROGNAME"
+	do_start
+	case "$?" in
+		0) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		1) [ "$VERBOSE" != no ] && \
+			log_progress_msg "(already running)" && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1; exit 1 ;;
+	esac
+	;;
+  stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$PROGNAME"
+	do_stop
+	case "$?" in
+		0 | 1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2)     [ "$VERBOSE" != no ] && log_end_msg 1; exit 1 ;;
+	esac
+	;;
+  restart|force-reload)
+	log_daemon_msg "Restarting $DESC" "$PROGNAME"
+	do_stop
+	case "$?" in
+	  0 | 1)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			1) log_end_msg 1; exit 1 ;; # Old process is still running
+			*) log_end_msg 1; exit 1 ;; # Failed to start
+		esac
+		;;
+	  *)
+	  	# Failed to stop
+		log_end_msg 1
+		exit 1
+		;;
+	esac
+	;;
+  *)
+	echo "Usage: $SCRIPTNAME {start|stop|restart|force-reload}" >&2
+	exit 3
+	;;
+esac
+
+exit 0

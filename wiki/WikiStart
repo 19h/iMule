@@ -1,0 +1,17 @@
+= Welcome to iMule repository =
+
+As all Wiki pages, this page is editable, this means that you can
+modify the contents of this page simply by using your
+web-browser. Simply click on the "Edit this page" link at the bottom
+of the page. WikiFormatting will give you a detailed description of
+available Wiki formatting commands.
+
+== Starting Points ==
+ * [wiki:SubVersion subversion] : access the repository with SVN.
+ * [source: Browse the source SVN repository]
+ * [wiki:CompilationTips Compilation] : tips for compiling iMule sources. 
+ * [wiki:NewNews Various news] and comments and stuffs...
+ * [wiki:UserManual User manual] or sort of...
+
+For a complete list of local wiki pages, see TitleIndex.[[BR]]
+For infos about the Trac Wiki system used on this site, see TracWikiStart.
